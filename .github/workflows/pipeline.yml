@@ -1,0 +1,98 @@
+name: librandomx pipeline
+on: push
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform: [ubuntu-latest, windows-latest, raspbian-private, macos-private]
+    runs-on: ${{ matrix.platform }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Build Linux
+      if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'raspbian-private'}}
+      run: |
+        mkdir -p src/.libs
+        docker build . -t librandomx:${{matrix.platform}}
+        docker create -it --name dummy librandomx:${{matrix.platform}} bash
+        docker cp dummy:/usr/local/bin/librandomx.a src/.libs/librandomx.a
+        docker rm -f dummy
+    - name: Build Mac
+      if: ${{ matrix.platform == 'macos-private' }}
+      run: |
+        mkdir build && cmake .. && make
+    - name: Setup Win
+      if: ${{ matrix.platform == 'windows-latest' }}
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        update: true
+        install: >
+          base-devel
+          mingw-w64-x86_64-toolchain
+    - name: Build Windows
+      if: ${{ matrix.platform == 'windows-latest' }}
+      shell: msys2 {0}
+      run: |
+        mkdir build && cmake .. && make
+    - name: Upload
+      uses: actions/upload-artifact@v2
+      with:
+        name: librandomx-${{matrix.platform}}
+        path: src/.libs/librandomx.a
+  release:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Download Linux lib
+      uses: actions/download-artifact@v2
+      with:
+        name: librandomx-ubuntu-latest
+        path: linux-x86_64
+    - name: Download Raspbian lib
+      uses: actions/download-artifact@v2
+      with:
+        name: librandomx-raspbian-private
+        path: linux-arm64
+    - name: Download Mac lib
+      uses: actions/download-artifact@v2
+      with:
+        name: librandomx-macos-private
+        path: darwin-x86_64
+    - name: Download Win lib
+      uses: actions/download-artifact@v2
+      with:
+        name: librandomx-windows-latest
+        path: windows-x86_64
+    - name: Create zip
+      run: |
+        zip -r librandomx linux-x86_64 linux-arm64 darwin-x86_64 windows-x86_64
+    - name: Bump version
+      id: version_bump
+      uses: anothrNick/github-tag-action@1.13.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DEFAULT_BUMP: "patch"
+        RELEASE_BRANCHES: "master"
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version_bump.outputs.tag }}
+        release_name: librandomx ${{ steps.version_bump.outputs.tag }}
+        draft: false
+        prerelease: false
+    - name: Upload release assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: librandomx.zip
+        asset_name: librandomx.zip
+        asset_content_type: application/zip
