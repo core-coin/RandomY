@@ -12,8 +12,8 @@ jobs:
     - name: Build Linux
       if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'raspbian-private'}}
       run: |
-        mkdir -p build
         docker build . -t librandomx:${{matrix.platform}}
+        mkdir -p build
         docker create -it --name dummy librandomx:${{matrix.platform}} bash
         docker cp dummy:/usr/local/bin/librandomx.a build/librandomx.a
         docker rm -f dummy
