@@ -20,7 +20,7 @@ jobs:
     - name: Build Mac
       if: ${{ matrix.platform == 'macos-private' }}
       run: |
-        mkdir build && cmake .. && make
+        mkdir build && cd build && cmake .. && make
     - name: Setup Win
       if: ${{ matrix.platform == 'windows-latest' }}
       uses: msys2/setup-msys2@v2
@@ -29,14 +29,12 @@ jobs:
         update: true
         install: >
           base-devel
-          automake
           mingw-w64-x86_64-toolchain
-          mingw-w64-x86_64-cmake
     - name: Build Windows
       if: ${{ matrix.platform == 'windows-latest' }}
       shell: msys2 {0}
       run: |
-        mkdir build && cmake .. && make
+        mkdir build && cd build && cmake .. && make
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
