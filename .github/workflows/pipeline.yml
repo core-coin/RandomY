@@ -29,7 +29,9 @@ jobs:
         update: true
         install: >
           base-devel
+          automake
           mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-cmake
     - name: Build Windows
       if: ${{ matrix.platform == 'windows-latest' }}
       shell: msys2 {0}
