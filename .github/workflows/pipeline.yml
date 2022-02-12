@@ -29,6 +29,8 @@ jobs:
         update: true
         install: >
           base-devel
+          mingw-w64-x86_64-make
+          mingw-w64-x86_64-cmake
           mingw-w64-x86_64-toolchain
     - name: Build Windows
       if: ${{ matrix.platform == 'windows-latest' }}
