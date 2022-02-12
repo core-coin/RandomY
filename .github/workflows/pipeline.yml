@@ -4,7 +4,8 @@ jobs:
   build:
     strategy:
       matrix:
-        platform: [ubuntu-latest, windows-latest, raspbian-private, macos-latest]
+        #platform: [ubuntu-latest, windows-latest, raspbian-private, macos-latest]
+        platform: [windows-latest]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Checkout
@@ -35,7 +36,7 @@ jobs:
       if: ${{ matrix.platform == 'windows-latest' }}
       shell: msys2 {0}
       run: |
-        mkdir build && cd build && cmake .. && make
+        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && make
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
