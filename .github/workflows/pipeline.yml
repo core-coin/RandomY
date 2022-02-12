@@ -12,10 +12,10 @@ jobs:
     - name: Build Linux
       if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'raspbian-private'}}
       run: |
-        mkdir -p src/.libs
+        mkdir -p build
         docker build . -t librandomx:${{matrix.platform}}
         docker create -it --name dummy librandomx:${{matrix.platform}} bash
-        docker cp dummy:/usr/local/bin/librandomx.a src/.libs/librandomx.a
+        docker cp dummy:/usr/local/bin/librandomx.a build/librandomx.a
         docker rm -f dummy
     - name: Build Mac
       if: ${{ matrix.platform == 'macos-latest' }}
@@ -28,19 +28,19 @@ jobs:
         msystem: mingw64
         update: true
         install: >
-          base-devel
+          mingw-w64-x86_64-make
           mingw-w64-x86_64-cmake
-          mingw-w64-x86_64-toolchain
+          mingw-w64-x86_64-gcc
     - name: Build Windows
       if: ${{ matrix.platform == 'windows-latest' }}
       shell: msys2 {0}
       run: |
-        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && make
+        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw-w64-x86_64-make
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
         name: librandomx-${{matrix.platform}}
-        path: src/.libs/librandomx.a
+        path: build/librandomx.a
   release:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
