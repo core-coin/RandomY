@@ -4,8 +4,7 @@ jobs:
   build:
     strategy:
       matrix:
-        #platform: [ubuntu-latest, windows-latest, raspbian-private, macos-latest]
-        platform: [windows-latest]
+        platform: [ubuntu-latest, windows-latest, raspbian-private, macos-latest]
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Checkout
@@ -19,7 +18,7 @@ jobs:
         docker cp dummy:/usr/local/bin/librandomx.a src/.libs/librandomx.a
         docker rm -f dummy
     - name: Build Mac
-      if: ${{ matrix.platform == 'macos-private' }}
+      if: ${{ matrix.platform == 'macos-latest' }}
       run: |
         mkdir build && cd build && cmake .. && make
     - name: Setup Win
@@ -62,7 +61,7 @@ jobs:
     - name: Download Mac lib
       uses: actions/download-artifact@v2
       with:
-        name: librandomx-macos-private
+        name: librandomx-macos-latest
         path: darwin-x86_64
     - name: Download Win lib
       uses: actions/download-artifact@v2
