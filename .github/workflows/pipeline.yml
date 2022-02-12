@@ -35,7 +35,7 @@ jobs:
       if: ${{ matrix.platform == 'windows-latest' }}
       shell: msys2 {0}
       run: |
-        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw-w64-x86_64-make
+        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make
     - name: Upload
       uses: actions/upload-artifact@v2
       with:
