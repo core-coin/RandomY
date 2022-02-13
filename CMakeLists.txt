@@ -26,7 +26,7 @@
 # STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 # THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.3)
 
 project(RandomX)
 
@@ -56,11 +56,7 @@ src/virtual_machine.cpp
 src/vm_compiled_light.cpp
 src/blake2/blake2b.c)
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mmacosx-version-min=10.12")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.12")
-    set(CMAKE_LFLAGS "${CMAKE_LFLAGS} -mmacosx-version-min=10.12")
-endif()
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12")
 
 if(NOT ARCH_ID)
   # allow cross compiling
