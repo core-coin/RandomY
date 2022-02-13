@@ -12,9 +12,9 @@ jobs:
     - name: Build Linux
       if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'raspbian-private'}}
       run: |
-        docker build . -t librandomx:${{matrix.platform}}
+        docker build . -t librandomy:${{matrix.platform}}
         mkdir -p build
-        docker create -it --name dummy librandomx:${{matrix.platform}} bash
+        docker create -it --name dummy librandomy:${{matrix.platform}} bash
         docker cp dummy:/randomy/randomy/build/librandomx.a build/librandomx.a
         docker rm -f dummy
     - name: Build Mac
@@ -94,6 +94,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: librandomx.zip
-        asset_name: librandomx.zip
+        asset_path: librandomy.zip
+        asset_name: librandomy.zip
         asset_content_type: application/zip
