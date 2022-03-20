@@ -1,6 +1,6 @@
 # RandomY
 
-RandomY is a proof-of-decentralized-efficiency (PoDE) algorithm that is optimized for IoT CPUs. RandomY uses random code execution (hence the name) together with several memory-hard techniques to minimize the efficiency advantage of specialized hardware.
+RandomY is a proof-of-distributed-efficiency (PoDE) algorithm that is optimized for IoT CPUs. RandomY uses random code execution (hence the name) together with several memory-hard techniques to minimize the efficiency advantage of specialized hardware.
 
 ## Overview
 
