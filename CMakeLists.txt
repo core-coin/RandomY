@@ -56,6 +56,8 @@ src/virtual_machine.cpp
 src/vm_compiled_light.cpp
 src/blake2/blake2b.c)
 
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12")
+
 if(NOT ARCH_ID)
   # allow cross compiling
   if(CMAKE_SYSTEM_PROCESSOR STREQUAL "")
