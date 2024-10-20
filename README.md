@@ -27,7 +27,7 @@ git clone https://github.com/core-coin/RandomY.git
 cd RandomY
 mkdir build && cd build
 cmake -DARCH=native ..
-make
+make -j($nproc)
 ```
 
 To build portable binaries, omit the `ARCH` option when executing cmake.
@@ -59,19 +59,13 @@ The table below lists the performance of selected CPUs using the optimal number 
 |AMD Ryzen 7 3700X|16GB DDR4-3600|Ubuntu 20.04 LTS|10000 H/s|38×|300W|
 |Raspberry Pi 4|8GB LPDDR4-3200 SDRAM|Ubuntu 20.04 LTS|260 H/s|1×|5.5W|
 
-<<<<<<< HEAD
 Note that RandomX currently includes a JIT compiler for x86-64, ARM64 and RISCV64. Other architectures have to use the portable interpreter, which is much slower.
 
-### GPU performance
+|CPU|RAM|OS|RandomY hashrate|Efficiency|Power consumption|
+|---|---|--|----------------|----------|-----------------|
+|AMD Ryzen 7 3700X|16GB DDR4-3600|Ubuntu 20.04 LTS|10000 H/s|38×|300W|
+|Raspberry Pi 4|8GB LPDDR4-3200 SDRAM|Ubuntu 20.04 LTS|260 H/s|1×|5.5W|
 
-SChernykh is developing GPU mining code for RandomX. Benchmarks are included in the following repositories:
-
-* [CUDA miner](https://github.com/SChernykh/RandomX_CUDA) - NVIDIA GPUs.
-* [OpenCL miner](https://github.com/SChernykh/RandomX_OpenCL) - only for AMD Vega and AMD Polaris GPUs (uses GCN machine code).
-
-The code from the above repositories is included in the open source miner [XMRig](https://github.com/xmrig/xmrig).
-
-Note that GPUs are at a disadvantage when running RandomX since the algorithm was designed to be efficient on CPUs.
 Note that RandomY currently includes a JIT compiler for x86-64 and ARM64. Other architectures have to use the portable interpreter, which is much slower.
 
 # FAQ
