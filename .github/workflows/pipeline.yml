@@ -28,7 +28,7 @@ jobs:
       run: |
         mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
     - name: Build & Test
-      if: ${{ matrix.config.os == 'macos-latest' }}
+      if: ${{ matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-15' }}
       run: |
         uname -m
         mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=${{ matrix.config.arch }} .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
