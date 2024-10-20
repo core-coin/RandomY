@@ -28,7 +28,7 @@ jobs:
     - name: Build
       if: ${{ matrix.config.os == 'windows-latest' }}
       shell: msys2 {0}
-      run: mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make
+      run: mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make && ./randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
