@@ -5,10 +5,10 @@ jobs:
     strategy:
       matrix:
         config:
-          - {os: ubuntu-latest, path: linux-x86_64}
-          - {os: macos-latest, path: darwin-x86_64}
-          - {os: macos-latest, path: darwin-arm64}
-          - {os: windows-latest, path: windows-x86_64}
+          - {os: ubuntu-latest, path: linux-x86_64, arch: x86_64}
+          - {os: macos-13, path: darwin-x86_64, arch: x86_64}
+          - {os: macos-latest, path: darwin-arm64, arch: arm64}
+          - {os: windows-latest, path: windows-x86_64, arch: x86_64}
     runs-on: ${{ matrix.config.os }}
     steps:
     - name: Checkout
@@ -24,13 +24,14 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-gcc
     - name: Build & Test
-      if: ${{ matrix.config.os != 'windows-latest' && matrix.config.path != 'darwin-arm64' }}
+      if: ${{ matrix.config.os == 'ubuntu-latest' }}
       run: |
         mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
     - name: Build & Test
-      if: ${{ matrix.config.os == 'macos-latest' && matrix.config.path == 'darwin-arm64' }}
+      if: ${{ matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' }}
       run: |
-        mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=arm64 .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
+        uname -m
+        mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=${{ matrix.config.arch }} .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
     - name: Build & Test
       if: ${{ matrix.config.os == 'windows-latest' }}
       shell: msys2 {0}
@@ -46,7 +47,6 @@ jobs:
       matrix:
         config:
           - {arch: aarch64, branch: latest-stable}
-          - {arch: armv7, branch: latest-stable}
           - {arch: riscv64, branch: edge}
     needs: build
     runs-on: ubuntu-latest
@@ -90,17 +90,12 @@ jobs:
       with:
         name: linux-riscv64
         path: linux-riscv64
-    - name: Linux armv7
-      uses: actions/download-artifact@v3
-      with:
-        name: linux-armv7
-        path: linux-armv7
-    - name: Mac x86_64
+    - name: Darwin x86_64
       uses: actions/download-artifact@v3
       with:
         name: darwin-x86_64
         path: darwin-x86_64
-    - name: Mac arm64
+    - name: Darwin arm64
       uses: actions/download-artifact@v3
       with:
         name: darwin-arm64
@@ -112,7 +107,7 @@ jobs:
         path: windows-x86_64
     - name: Create zip
       run: |
-        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 linux-armv7 darwin-x86_64 darwin-arm64 windows-x86_64
+        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 darwin-arm64 darwin-x86_64 windows-x86_64
     - name: Bump version
       id: version_bump
       uses: anothrNick/github-tag-action@1.39.0
