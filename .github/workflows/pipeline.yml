@@ -87,12 +87,12 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: linux-armv7
-        name: linux-armv7
+        path: linux-armv7
     - name: Mac x86_64
       uses: actions/download-artifact@v3
       with:
         name: darwin-x86_64
-        name: darwin-x86_64
+        path: darwin-x86_64
     - name: Win x86_64
       uses: actions/download-artifact@v3
       with:
