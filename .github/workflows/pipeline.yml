@@ -60,7 +60,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: librandomy-linux-${{ matrix.config.arch }}
+        name: linux-${{ matrix.config.arch }}
         path: build/librandomx.a
   release:
     runs-on: ubuntu-latest
