@@ -72,29 +72,35 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: linux-x86_64
+        path: linux-x86_64
     - name: Linux aarch64
       uses: actions/download-artifact@v3
       with:
         name: linux-aarch64
+        path: linux-aarch64
     - name: Linux riscv64
       uses: actions/download-artifact@v3
       with:
         name: linux-riscv64
+        path: linux-riscv64
     - name: Linux armv7
       uses: actions/download-artifact@v3
       with:
+        name: linux-armv7
         name: linux-armv7
     - name: Mac x86_64
       uses: actions/download-artifact@v3
       with:
         name: darwin-x86_64
+        name: darwin-x86_64
     - name: Win x86_64
       uses: actions/download-artifact@v3
       with:
         name: windows-x86_64
+        path: windows-x86_64
     - name: Create zip
       run: |
-        zip -r librandomy ./*
+        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 linux-armv7 darwin-x86_64 windows-x86_64
     - name: Bump version
       id: version_bump
       uses: anothrNick/github-tag-action@1.39.0
