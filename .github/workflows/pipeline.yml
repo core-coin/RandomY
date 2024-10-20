@@ -27,7 +27,7 @@ jobs:
       if: ${{ matrix.config.os != 'windows-latest' && matrix.config.path != 'darwin-arm64' }}
       run: |
         mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
-    - name: Build & Test for macOS ARM64
+    - name: Build & Test
       if: ${{ matrix.config.os == 'macos-latest' && matrix.config.path == 'darwin-arm64' }}
       run: |
         mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=arm64 .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
