@@ -22,16 +22,13 @@ jobs:
           mingw-w64-x86_64-make
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-gcc
-    - name: Build
+    - name: Build & Test
       if: ${{ matrix.config.os != 'windows-latest' }}
-      run: mkdir build && cd build && cmake .. && make -j$(nproc)
+      run: mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
     - name: Build
       if: ${{ matrix.config.os == 'windows-latest' }}
       shell: msys2 {0}
       run: mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make
-    - name: Test
-      if: ${{ matrix.config.os != 'windows-latest' }}
-      run: build/randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
@@ -58,10 +55,7 @@ jobs:
       shell: alpine.sh --root {0}
       run: apk add git cmake gcc g++ make
     - name: Build
-      run: mkdir build && cd build && cmake .. && make -j$(nproc)
-    - name: Test
-      shell: alpine.sh {0}
-      run: build/randomx-tests
+      run: mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
