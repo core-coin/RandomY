@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Build Linux
       if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'raspbian-private'}}
       run: |
@@ -37,7 +37,7 @@ jobs:
       run: |
         mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make
     - name: Upload
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: librandomy-${{matrix.platform}}
         path: build/librandomx.a
@@ -47,7 +47,7 @@ jobs:
     needs: build
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Download Linux lib
       uses: actions/download-artifact@v2
       with:
