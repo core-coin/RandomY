@@ -6,7 +6,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest, path: linux-x86_64, arch: x86_64}
-          - {os: macos-latest, path: darwin-x86_64, arch: x86_64}
+          - {os: macos-private, path: darwin-x86_64, arch: x86_64}
           - {os: macos-latest, path: darwin-arm64, arch: arm64}
           - {os: windows-latest, path: windows-x86_64, arch: x86_64}
     runs-on: ${{ matrix.config.os }}
@@ -106,7 +106,7 @@ jobs:
         path: windows-x86_64
     - name: Create zip
       run: |
-        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 darwin-x86_64 darwin-arm64 windows-x86_64
+        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 darwin-arm64 windows-x86_64
     - name: Bump version
       id: version_bump
       uses: anothrNick/github-tag-action@1.39.0
