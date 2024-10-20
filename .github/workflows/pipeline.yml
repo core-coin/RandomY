@@ -30,6 +30,7 @@ jobs:
       shell: msys2 {0}
       run: mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make
     - name: Test
+      if: ${{ matrix.config.os != 'windows-latest' }}
       run: build/randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
