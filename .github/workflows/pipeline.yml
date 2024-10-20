@@ -6,7 +6,7 @@ jobs:
       matrix:
         config:
           - {os: ubuntu-latest, path: linux-x86_64, arch: x86_64}
-          - {os: macos-latest, path: darwin-x86_64, arch: x86_64}
+          #- {os: macos-latest, path: darwin-x86_64, arch: x86_64}
           - {os: macos-latest, path: darwin-arm64, arch: arm64}
           - {os: windows-latest, path: windows-x86_64, arch: x86_64}
     runs-on: ${{ matrix.config.os }}
@@ -30,7 +30,6 @@ jobs:
     - name: Build & Test
       if: ${{ matrix.config.os == 'macos-latest' }}
       run: |
-        uname -m 
         mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=${{ matrix.config.arch }} .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
     - name: Build & Test
       if: ${{ matrix.config.os == 'windows-latest' }}
@@ -90,11 +89,6 @@ jobs:
       with:
         name: linux-riscv64
         path: linux-riscv64
-    - name: Mac x86_64
-      uses: actions/download-artifact@v3
-      with:
-        name: darwin-x86_64
-        path: darwin-x86_64
     - name: Mac arm64
       uses: actions/download-artifact@v3
       with:
