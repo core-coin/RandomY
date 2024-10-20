@@ -144,6 +144,8 @@ void* allocMemoryPages(size_t bytes) {
 		#define PEXTRA	0
 	#endif
 	mem = mmap(NULL, bytes, PAGE_READWRITE | RESERVED_FLAGS | PEXTRA, MAP_ANONYMOUS | MAP_PRIVATE | MEXTRA, -1, 0);
+	if (mem == MAP_FAILED)
+		mem = NULL;
 #if defined(USE_PTHREAD_JIT_WP) && defined(MAC_OS_VERSION_11_0) \
 	&& MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_11_0
 	if (__builtin_available(macOS 11.0, *)) {
@@ -187,6 +189,7 @@ void setPagesRX(void* ptr, size_t bytes) {
 	&& MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_VERSION_11_0
 	if (__builtin_available(macOS 11.0, *)) {
 		pthread_jit_write_protect_np(1);
+		__builtin___clear_cache((char*)ptr, ((char*)ptr) + bytes);
 	} else {
 		pageProtect(ptr, bytes, PAGE_EXECUTE_READ, &errfunc);
 	}
@@ -206,8 +209,8 @@ void* allocLargePagesMemory(size_t bytes) {
 #if defined(_WIN32) || defined(__CYGWIN__)
 	if (setPrivilege("SeLockMemoryPrivilege", 1, &errfunc))
 		return NULL;
-	auto pageMinimum = GetLargePageMinimum();
-	if (pageMinimum <= 0) {
+	size_t pageMinimum = GetLargePageMinimum();
+	if (!pageMinimum) {
 		errfunc = "No large pages";
 		return NULL;
 	}
