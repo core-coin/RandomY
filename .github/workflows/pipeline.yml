@@ -7,6 +7,7 @@ jobs:
         config:
           - {os: ubuntu-latest, path: linux-x86_64}
           - {os: macos-latest, path: darwin-x86_64}
+          - {os: macos-latest, path: darwin-arm64}
           - {os: windows-latest, path: windows-x86_64}
     runs-on: ${{ matrix.config.os }}
     steps:
@@ -23,12 +24,18 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-gcc
     - name: Build & Test
-      if: ${{ matrix.config.os != 'windows-latest' }}
-      run: mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
-    - name: Build
+      if: ${{ matrix.config.os != 'windows-latest' && matrix.config.path != 'darwin-arm64' }}
+      run: |
+        mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
+    - name: Build & Test
+      if: ${{ matrix.config.os == 'macos-latest' && matrix.config.path == 'darwin-arm64' }}
+      run: |
+        mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=arm64 .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
+    - name: Build & Test
       if: ${{ matrix.config.os == 'windows-latest' }}
       shell: msys2 {0}
-      run: mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make && ./randomx-tests
+      run: |
+        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make && ./randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
@@ -93,6 +100,11 @@ jobs:
       with:
         name: darwin-x86_64
         path: darwin-x86_64
+    - name: Mac arm64
+      uses: actions/download-artifact@v3
+      with:
+        name: darwin-arm64
+        path: darwin-arm64
     - name: Win x86_64
       uses: actions/download-artifact@v3
       with:
@@ -100,7 +112,7 @@ jobs:
         path: windows-x86_64
     - name: Create zip
       run: |
-        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 linux-armv7 darwin-x86_64 windows-x86_64
+        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 linux-armv7 darwin-x86_64 darwin-arm64 windows-x86_64
     - name: Bump version
       id: version_bump
       uses: anothrNick/github-tag-action@1.39.0
