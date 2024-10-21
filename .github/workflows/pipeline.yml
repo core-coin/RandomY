@@ -51,7 +51,6 @@ jobs:
         config:
           - {arch: x86_64, branch: latest-stable}
           - {arch: aarch64, branch: latest-stable}
-          - {arch: riscv64, branch: edge}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -91,12 +90,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: linux-aarch64
-        path: linux-aarch64
-    - name: Linux riscv64
-      uses: actions/download-artifact@v3
-      with:
-        name: linux-riscv64
-        path: linux-riscv64
+        path: linux-arm64
     - name: Darwin x86_64
       uses: actions/download-artifact@v3
       with:
@@ -114,7 +108,7 @@ jobs:
         path: windows-x86_64
     - name: Create zip
       run: |
-        zip -r librandomy linux-x86_64 linux-aarch64 linux-riscv64 darwin-arm64 darwin-x86_64 windows-x86_64
+        zip -r librandomy linux-x86_64 linux-arm64 darwin-arm64 darwin-x86_64 windows-x86_64
     - name: Bump version
       id: version_bump
       uses: anothrNick/github-tag-action@1.39.0
