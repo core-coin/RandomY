@@ -1,19 +1,32 @@
 name: librandomy pipeline
 on: push
 jobs:
-  build:
+  build-mac:
     strategy:
       matrix:
         config:
           - {os: macos-13, path: darwin-x86_64, arch: x86_64}
           - {os: macos-latest, path: darwin-arm64, arch: arm64}
-          - {os: windows-latest, path: windows-x86_64, arch: x86_64}
     runs-on: ${{ matrix.config.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    - name: Build & Test
+      run: |
+        uname -m
+        mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=${{ matrix.config.arch }} .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.config.path }}
+        path: build/librandomx.a
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
     - name: Setup Win
-      if: ${{ matrix.config.os == 'windows-latest' }}
       uses: msys2/setup-msys2@v2
       with:
         msystem: mingw64
@@ -23,24 +36,15 @@ jobs:
           mingw-w64-x86_64-cmake
           mingw-w64-x86_64-gcc
     - name: Build & Test
-      if: ${{ matrix.config.os == 'ubuntu-latest' }}
-      run: |
-        mkdir build && cd build && cmake .. && make -j$(nproc) && ./randomx-tests
-    - name: Build & Test
-      if: ${{ matrix.config.os == 'macos-latest' || matrix.config.os == 'macos-13' }}
-      run: |
-        uname -m
-        mkdir build && cd build && cmake -DCMAKE_OSX_ARCHITECTURES=${{ matrix.config.arch }} .. && make -j$(sysctl -n hw.ncpu) && ./randomx-tests
-    - name: Build & Test
-      if: ${{ matrix.config.os == 'windows-latest' }}
       shell: msys2 {0}
       run: |
-        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make && ./randomx-tests
+        mkdir build && cd build && cmake .. -G "MinGW Makefiles" && mingw32-make -j$(echo $NUMBER_OF_PROCESSORS) && ./randomx-tests
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.config.path }}
+        name: windows-x86_64
         path: build/librandomx.a
+
   build-alpine:
     strategy:
       matrix:
@@ -48,7 +52,6 @@ jobs:
           - {arch: x86_64, branch: latest-stable}
           - {arch: aarch64, branch: latest-stable}
           - {arch: riscv64, branch: edge}
-    needs: build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -68,10 +71,11 @@ jobs:
       with:
         name: linux-${{ matrix.config.arch }}
         path: build/librandomx.a
+
   release:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
-    needs: [build, build-alpine]
+    needs: [build-mac, build-windows, build-alpine]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
